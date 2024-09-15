@@ -31,11 +31,12 @@ async function GenAlbumThumb(albumName) {
   albumKeyParams = { Prefix: albumPhotosKey }
   const prefixResponse = await s3.listObjects(albumKeyParams).promise();
   var contentList = prefixResponse.Contents;
-  console.log(prefixResponse)
-  console.log(contentList)
+  //console.log(prefixResponse)
+  //console.log(contentList)
   var allURL = [];
   const keyLen = contentList.length;
-  const randomIndex = 1 + Math.floor(Math.random() * keyLen-1);
+  const randomIndex = 1 + Math.floor(Math.random() * (keyLen-1));
+  //console.log(randomIndex);
   var maxLastModified = 0;
   contentList.forEach(content => {
     var photoKey = content.Key;
@@ -81,35 +82,17 @@ async function listAlbums() {
   } catch (err) {
     return alert("There was an error listing your albums: " + err.message);
   }
-  /*
-        var albums = data.CommonPrefixes.map(function (commonPrefix) {
-          var prefix = commonPrefix.Prefix;
-          var albumName = decodeURIComponent(prefix.replace("/", ""));
-          if (albumName !== "assets" && albumName !== ".git") {
-            thumbNailDiv = viewThumbnail(albumName);
-            return thumbNailDiv;
-          }
-        });
-        var message = albums.length
-          ? getHtml(["<p>Click on an album name to view it.</p>"])
-          : "<p>You do not have any albums. Please Create album.";
-        var htmlTemplate = [
-          "<h2>Albums</h2>",
-          message,
-          '<div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-3">',    
-          getHtml(albums),
-          "</div>"
-        ];
-        document.getElementById("viewer").innerHTML = getHtml(htmlTemplate);
-      }
-    });*/
 }
 
 function viewThumbnail(imgURL, albumName, maxLastModified) {
   return [
     '<div class="col">',
     '<div class="card shadow-sm">',
-    '<img class="card-img-top img-cover" src=\''+imgURL+'\'>',
+    '<div class="card-img-top">',
+    '<div class="ratio ratio-16x9">',
+    '<img class="card-cover" src=\''+imgURL+'\'>',
+    '</div>',
+    '</div>',
     '<div class="card-body">',
     '<p class="card-text">Album Name: </p>',
     '<h2 class="strong">'+ albumName +'</h2>',
@@ -134,50 +117,72 @@ function viewAlbum(albumName) {
       // 'this' references the AWS.Request instance that represents the response
       //var href = this.request.httpRequest.endpoint.href;
       //var bucketUrl = href + albumBucketName + "/";
-  
+      
       var photos = data.Contents.map(function (photo) {
         var photoKey = photo.Key;
         var photoName = photoKey.replace(albumPhotosKey, "");
         var photoUrl = cloudFrontURL + albumName + '/' + photoName;
-        return getHtml([
-          '<div class="card">',
-          '<div class="bg-image hover-overlay" data-mdb-ripple-init data-mdb-ripple-color="light">',
-          '<img src="' + photoUrl +'" class="img-fluid"/>',
-          '<a href="#!">',
-          '<div class="mask" style="background-color: rgba(251, 251, 251, 0.15);"></div>',
-          '</a>',
-          '</div>',
-          '<div class="card-body">',
-          '<p class="card-text">' + photoName +'</p>',
-          '<button type="button" class="btn btn-primary btn-floating" data-mdb-ripple-init>',
-          '<i class="fas fa-download"></i>',
-          '</button>',
-          '</div>',
-          '</div>',
-        ]);
+        if (photoName != "") {
+          return getHtml([
+            '<div class="col-sm-4">',
+            '<div class="card shadow-sm">',
+            '<img class="card-cover card-img-top" src=\''+photoUrl+'\'>',
+            '<div class="card-body">',
+            '<div class="d-flex justify-content-between align-items-center">',
+            '<div class="btn-group btn-group-sm float-right" rle="group">',
+            '<button type="button" class="btn btn-sm btn-primary" onclick="downloadImage(\''+photoUrl+'\',\''+photoName+'\');">',
+            '<i class="bi bi-cloud-download"></i>',
+            '<button type="button" class="btn btn-sm btn-secondary" onclick="openImageInNewTab(\''+photoUrl+'\',\''+photoName+'\');">',
+            '<i class="bi bi-eye"></i>',
+            '</button>',
+            '</div>',
+            '<small class="text-body text-sm-end">' + photoName + '</small>',
+            '</div>',
+            '</div>',
+            '</div>',
+            '</div>'
+          ]);
+        }
       });
       var message = photos.length
         ? "<p>The following photos are present.</p>"
         : "<p>There are no photos in this album.</p>";
       var htmlTemplate = [
         "<div>",
-        '<button type="button" class="btn btn-sm btn-outline-primary" onclick="listAlbums()">Back To Albums</button>',
+        '<button type="button" class="btn btn-outline-primary" onclick="listAlbums()">Back To Albums</button>',
+        '<button type="button" class="btn btn-success" onclick="downloadImage(\''+cloudFrontURL + albumName + '.zip\');">Download Albums</button>',
         "</div>",
-        "<h2>",
+        "<h2 class='pt-3'>",
         "Album: " + albumName,
         "</h2>",
         message,
-        '<div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-3">',
+        '<div class="row row-cols-1 row-cols-sm-2 row-cols-md-4 g-2">',
         getHtml(photos),
         "</div>",
-        "<div>",
-        '<button type="button" class="btn btn-sm btn-outline-primary" onclick="listAlbums()">Back To Albums</button>',
+        '<div class="pt-3">',
+        '<button type="button" class="btn btn-outline-primary" onclick="listAlbums()">Back To Albums</button>',
+        '<button type="button" class="btn btn-success" onclick="downloadImage(\''+cloudFrontURL + albumName + '.zip\');">Download Albums</button>',
         "</div>",
       ];
       document.getElementById("viewer").innerHTML = getHtml(htmlTemplate);
-      document
-        .getElementsByTagName("img")[0]
-        .setAttribute("style", "display:none;");
     });
   }
   
+  // A function to download img from CloudFront
+  function downloadImage(url, filename) {
+    fetch(url)
+      .then(response => response.blob())
+      .then(blob => {
+        const link = document.createElement("a");
+        link.href = URL.createObjectURL(blob);
+        link.download = filename;
+        link.click();
+        URL.revokeObjectURL(link.href);
+      })
+      .catch(console.error);
+  }
+  
+  // A Function to open Img URL in new tab.
+  function openImageInNewTab(url) {
+    window.open(url, '_blank');
+  }

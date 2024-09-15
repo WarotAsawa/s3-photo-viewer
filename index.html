@@ -11,7 +11,7 @@
     <title>WEB ALBUM</title>
 
     <link rel="canonical" href="https://getbootstrap.com/docs/5.3/examples/album/">
-  
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@docsearch/css@3">
 
 <link href="./assets/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -19,8 +19,8 @@
       .card {
         max-width: 680px;
       }
-      .card-image-top {
-        width: 100%;
+      .card-cover {
+        object-fit: cover;
         height: 100%;
       }
       .bd-placeholder-img {
@@ -99,6 +99,19 @@
       .bd-mode-toggle .dropdown-menu .active .bi {
         display: block !important;
       }
+      .background-image {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-image: url('assets/img/section-bg.JPG');
+        background-size: cover;
+        background-position: center;
+        background-repeat: no-repeat;
+        z-index: -1;
+}
+
     </style>
 
   <script src="https://sdk.amazonaws.com/js/aws-sdk-2.1691.0.min.js"></script>
@@ -191,8 +204,8 @@
 </header>
 
 <main>
-
-  <section class="py-5 text-center container">
+  <div class="background-image"></div>
+  <section class="py-5 text-center container" >
     <div class="row py-lg-5">
       <div class="col-lg-6 col-md-8 mx-auto">
         <h1 class="fw-light">Warot's Gallery</h1>
@@ -214,8 +227,8 @@
     <p class="float-end mb-1">
       <a href="#">Back to top</a>
     </p>
-    <p class="mb-1">Album example is &copy; Bootstrap, but please download and customize it for yourself!</p>
-    <p class="mb-0">New to Bootstrap? <a href="/">Visit the homepage</a> or read our <a href="../getting-started/introduction/">getting started guide</a>.</p>
+    <p class="mb-1">This album created by &copy;WarotAsawa, using MD BootStrap!</p>
+    <p class="mb-0">Visit my <a href="https://github.com/WarotAsawa">GitHUb Page</a> or my <a href="https://www.linkedin.com/in/warot-asawa/">LinkedIn Profile</a>.</p>
   </div>
 </footer>
 <script src="./assets/dist/js/bootstrap.bundle.min.js"></script>
