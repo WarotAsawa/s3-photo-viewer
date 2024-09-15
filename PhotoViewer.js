@@ -150,7 +150,7 @@ function viewAlbum(albumName) {
       var htmlTemplate = [
         "<div>",
         '<button type="button" class="btn btn-outline-primary" onclick="listAlbums()">Back To Albums</button>',
-        '<button type="button" class="btn btn-success" onclick="downloadImage(\''+cloudFrontURL + albumName + '.zip\');">Download Albums</button>',
+        '<button type="button" class="btn btn-success" onclick="downloadImage(\''+cloudFrontURL + albumName + '.zip\',\''+ albumName + '.zip\');">Download Albums</button>',
         "</div>",
         "<h2 class='pt-3'>",
         "Album: " + albumName,
@@ -161,7 +161,7 @@ function viewAlbum(albumName) {
         "</div>",
         '<div class="pt-3">',
         '<button type="button" class="btn btn-outline-primary" onclick="listAlbums()">Back To Albums</button>',
-        '<button type="button" class="btn btn-success" onclick="downloadImage(\''+cloudFrontURL + albumName + '.zip\');">Download Albums</button>',
+        '<button type="button" class="btn btn-success" onclick="downloadImage(\''+cloudFrontURL + albumName + '.zip\',\''+ albumName + '.zip\');">Download Albums</button>',
         "</div>",
       ];
       document.getElementById("viewer").innerHTML = getHtml(htmlTemplate);
